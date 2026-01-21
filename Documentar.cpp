@@ -39,7 +39,7 @@ string gerador_relatorio::traduzir(string tk)
 	// trocar e manter tokens
 	
 	// detectar inclusão de biblioteca em C e C++
-	if(tk.at(0) == '#' && tk.at(1) == 'i'){ return ">>Vamos utilizar a biblioteca " + tk.substr(10, tk.substr(10).size()-2) + "\n\n";}
+	if(tk.at(0) == '#' && tk.at(1) == 'i'){ return ">>" + tk.substr(10, tk.substr(10).size()-2) + "\n\n";}
 	
 	// para python e C++ (ambos contém operação)
 	else if(tk.at(0) == '#'){return ">" + tk.substr(1, tk.substr(1).size()-1) + "\n";}
@@ -47,7 +47,7 @@ string gerador_relatorio::traduzir(string tk)
 	else if(tk.substr(0, 3) == "def"){return "#### Método/Função" + tk.substr(3, tk.substr(3).size()-2) + "\n\n";}
 	else if(tk.substr(0, 5) == "class"){return "## Definindo a classe" + tk.substr(5, tk.substr(5).size()-1) + "\n";}
 	else if(tk.substr(0, 6) == "return"){return "- essa operação retorna *" + tk.substr(7, tk.substr(7).size()-2) + "*\n\n";}
-	else if(tk.substr(0, 6) == "import"){return ">>Vamos utilizar a biblioteca" + tk.substr(6, tk.substr(6).size()-2) + "\n";}
+	else if(tk.substr(0, 6) == "import"){return ">>" + tk.substr(6, tk.substr(6).size()-2) + "\n";}
 	else if(tk.substr(0, 3) == "try"){return ">Ele irá tentar executar o processo, se tiver sucesso:\n";}
 	else if(tk.substr(0, 5) == "catch" ||tk.substr(0, 6) == "except"){return ">Caso um erro acontecer, então:\n";}
 	
@@ -95,6 +95,7 @@ string gerador_relatorio::gerar_relatorio(bool do_print, string filename)
 	ret += "# Documentação do código ";
 	ret += filename;
 	ret += "\n";
+	ret += "> Bibliotecas utilizadas:\n";
 	for(int i=0 ; i<code.size() ; i++)
 	{
 		// obter token
