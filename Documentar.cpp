@@ -15,7 +15,7 @@ class gerador_relatorio
 		
 	public:
 		void load_file(string filename);
-		string gerar_relatorio(bool do_print);
+		string gerar_relatorio(bool do_print, string filename);
 };
 
 // Carrega um arquivo de código para realizar a operação
@@ -38,36 +38,63 @@ string gerador_relatorio::traduzir(string tk)
 	
 	// trocar e manter tokens
 	
-	// para python
-	if(tk.at(0) == '#'){return "-" + tk.substr(1, tk.substr(1).size()-1) + "\n";}
+	// detectar inclusão de biblioteca em C e C++
+	if(tk.at(0) == '#' && tk.at(1) == 'i'){ return ">>Vamos utilizar a biblioteca " + tk.substr(10, tk.substr(10).size()-2) + "\n\n";}
+	
+	// para python e C++ (ambos contém operação)
+	else if(tk.at(0) == '#'){return ">" + tk.substr(1, tk.substr(1).size()-1) + "\n";}
 	else if(tk.substr(0, 3) == "\"\"\""){return tk.substr(3, tk.substr(3).size()-2) + "\n";}
-	else if(tk.substr(0, 3) == "def"){return ">Método" + tk.substr(3, tk.substr(3).size()-2) + "\n\n";}
+	else if(tk.substr(0, 3) == "def"){return "#### Método/Função" + tk.substr(3, tk.substr(3).size()-2) + "\n\n";}
 	else if(tk.substr(0, 5) == "class"){return "## Definindo a classe" + tk.substr(5, tk.substr(5).size()-1) + "\n";}
-	else if(tk.substr(0, 6) == "return"){return ">>essa operação retorna *" + tk.substr(7, tk.substr(7).size()-1) + "*\n\n";}
-	else if(tk.substr(0, 6) == "import"){return ">>Vamos utilizar" + tk.substr(6, tk.substr(6).size()-2) + "\n";}
-	else if(tk.substr(0, 4) == "from"){return ">Da biblioteca" + tk.substr(4, tk.substr(4).size()-2) + "\n";}
+	else if(tk.substr(0, 6) == "return"){return "- essa operação retorna *" + tk.substr(7, tk.substr(7).size()-2) + "*\n\n";}
+	else if(tk.substr(0, 6) == "import"){return ">>Vamos utilizar a biblioteca" + tk.substr(6, tk.substr(6).size()-2) + "\n";}
 	else if(tk.substr(0, 3) == "try"){return ">Ele irá tentar executar o processo, se tiver sucesso:\n";}
 	else if(tk.substr(0, 5) == "catch" ||tk.substr(0, 6) == "except"){return ">Caso um erro acontecer, então:\n";}
 	
-	// para C e C++
-	else if(tk.substr(0, 2) == "//"){return "-" + tk.substr(2, tk.substr(2).size()-1) + "\n";}
-	else if(tk.substr(0, 3) == "int"){return ">Método" + tk.substr(3, tk.substr(3).size()-1) + "\n\n";}
-	else if(tk.substr(0, 6) == "string"){return ">Método" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
-	else if(tk.substr(0, 4) == "void"){return ">Método" + tk.substr(4, tk.substr(4).size()-1) + "\n\n";}
-	else if(tk.substr(0, 6) == "vector"){return ">Método" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
-	else if(tk.substr(0, 4) == "bool"){return ">Método" + tk.substr(4, tk.substr(4).size()-1) + "\n\n";}
+	// para C e C++ (exclusivo)
+	
+	// se (linha não conter parenteses ou (conter parentesis e igual)), é uma delcaração de variavel, e não deve ser transofmada no MD
+	bool contem_parentese = false;
+	bool contem_igual = false;
+	for(char i : tk)
+	{
+		if(i == '='){contem_igual = true;}
+		if(i == '(' || i == ')'){contem_parentese = true;}
+	}
+	
+	bool eh_variavel = !contem_parentese || (contem_parentese && contem_igual);
+	
+	// se não for varivel, é transformado em MD
+	if(!eh_variavel)
+	{
+		if(tk.substr(0, 2) == "//")
+		{
+			string ret = tk.substr(2, tk.substr(2).size()-1) + ".\n";
+			while(ret[0] == ' '){ret = ret.substr(1);}
+			ret[0] = toupper(ret[0]);
+			return "> " + ret;
+		}
+		else if(tk.substr(0, 3) == "int"){return "#### Método/Função" + tk.substr(3, tk.substr(3).size()-1) + "\n\n";}
+		else if(tk.substr(0, 6) == "string"){return "#### Método/Função" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
+		else if(tk.substr(0, 4) == "void"){return "#### Método/Função" + tk.substr(4, tk.substr(4).size()-1) + "\n\n";}
+		else if(tk.substr(0, 6) == "vector"){return "#### Método/Função" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
+		else if(tk.substr(0, 4) == "bool"){return "#### Método/Função" + tk.substr(4, tk.substr(4).size()-1) + "\n\n";}
+	}
 	
 	return "";
 }
 
 // Método principal para gerar o relatório
-string gerador_relatorio::gerar_relatorio(bool do_print)
+string gerador_relatorio::gerar_relatorio(bool do_print, string filename)
 {
 	// variaveis
 	string ret = "";
 	string token;
 	
 	// processo principal
+	ret += "# Documentação do código ";
+	ret += filename;
+	ret += "\n";
 	for(int i=0 ; i<code.size() ; i++)
 	{
 		// obter token
@@ -89,5 +116,5 @@ int main(int argc, char *argv[])
 {
 	gerador_relatorio gr;
 	gr.load_file(argv[1]);
-	gr.gerar_relatorio(true);
+	gr.gerar_relatorio(true, argv[1]);
 }
