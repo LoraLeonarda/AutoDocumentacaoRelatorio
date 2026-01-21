@@ -52,6 +52,13 @@ string gerador_relatorio::traduzir(string tk)
 	else if(tk.substr(0, 5) == "catch" ||tk.substr(0, 6) == "except"){return ">Caso um erro acontecer, então:\n";}
 	
 	// para C e C++ (exclusivo)
+	else if(tk.substr(0, 2) == "//")
+	{
+		string ret = tk.substr(2, tk.substr(2).size()-1) + ".\n";
+		while(ret[0] == ' '){ret = ret.substr(1);}
+		ret[0] = toupper(ret[0]);
+		return "> " + ret;
+	}
 	
 	// se (linha não conter parenteses ou (conter parentesis e igual)), é uma delcaração de variavel, e não deve ser transofmada no MD
 	bool contem_parentese = false;
@@ -67,14 +74,7 @@ string gerador_relatorio::traduzir(string tk)
 	// se não for varivel, é transformado em MD
 	if(!eh_variavel)
 	{
-		if(tk.substr(0, 2) == "//")
-		{
-			string ret = tk.substr(2, tk.substr(2).size()-1) + ".\n";
-			while(ret[0] == ' '){ret = ret.substr(1);}
-			ret[0] = toupper(ret[0]);
-			return "> " + ret;
-		}
-		else if(tk.substr(0, 3) == "int"){return "#### Método/Função" + tk.substr(3, tk.substr(3).size()-1) + "\n\n";}
+		if(tk.substr(0, 3) == "int"){return "#### Método/Função" + tk.substr(3, tk.substr(3).size()-1) + "\n\n";}
 		else if(tk.substr(0, 6) == "string"){return "#### Método/Função" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
 		else if(tk.substr(0, 4) == "void"){return "#### Método/Função" + tk.substr(4, tk.substr(4).size()-1) + "\n\n";}
 		else if(tk.substr(0, 6) == "vector"){return "#### Método/Função" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
