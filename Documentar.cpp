@@ -11,11 +11,11 @@ class gerador_relatorio
 {
 	private:
 		vector<string> code;
-		string traduzir(string tk);
+		string traduzir(string tk, bool comentarios);
 		
 	public:
 		void load_file(string filename);
-		string gerar_relatorio(bool do_print, string filename);
+		string gerar_relatorio(bool do_print, string filename, bool comentarios);
 };
 
 // Carrega um arquivo de código para realizar a operação
@@ -28,7 +28,7 @@ void gerador_relatorio::load_file(string filename)
 }
 
 // Traduz uma linha de código para um comentário no MD
-string gerador_relatorio::traduzir(string tk)
+string gerador_relatorio::traduzir(string tk, bool comentarios)
 {
 	// remover os tabs do inicio da linha e verificações adicionais
 	if(tk.empty()) return "";
@@ -39,20 +39,20 @@ string gerador_relatorio::traduzir(string tk)
 	// trocar e manter tokens
 	
 	// detectar inclusão de biblioteca em C e C++
-	if(tk.at(0) == '#' && tk.at(1) == 'i'){ return ">>" + tk.substr(10, tk.substr(10).size()-2) + "\n\n";}
+	if(tk.at(0) == '#' && tk.at(1) == 'i'){ return "  - " + tk.substr(10, tk.substr(10).size()-2) + "\n\n";}
 	
 	// para python e C++ (ambos contém operação)
-	else if(tk.at(0) == '#'){return ">" + tk.substr(1, tk.substr(1).size()-1) + "\n";}
-	else if(tk.substr(0, 3) == "\"\"\""){return tk.substr(3, tk.substr(3).size()-2) + "\n";}
-	else if(tk.substr(0, 3) == "def"){return "#### Método/Função" + tk.substr(3, tk.substr(3).size()-2) + "\n\n";}
+	else if(tk.at(0) == '#' and comentarios){return ">" + tk.substr(1, tk.substr(1).size()-1) + "\n";}
+	else if(tk.substr(0, 3) == "\"\"\"" and comentarios){return tk.substr(3, tk.substr(3).size()-2) + "\n";}
+	else if(tk.substr(0, 3) == "def"){return "#### Função" + tk.substr(3, tk.substr(3).size()-2) + "\n\n";}
 	else if(tk.substr(0, 5) == "class"){return "## Definindo a classe" + tk.substr(5, tk.substr(5).size()-1) + "\n";}
-	else if(tk.substr(0, 6) == "return"){return "- essa operação retorna *" + tk.substr(7, tk.substr(7).size()-2) + "*\n\n";}
-	else if(tk.substr(0, 6) == "import"){return ">>" + tk.substr(6, tk.substr(6).size()-2) + "\n";}
+	else if(tk.substr(0, 6) == "return"){return "";}
+	else if(tk.substr(0, 6) == "import"){return "  - " + tk.substr(6, tk.substr(6).size()-2) + "\n";}
 	else if(tk.substr(0, 3) == "try"){return ">Ele irá tentar executar o processo, se tiver sucesso:\n";}
 	else if(tk.substr(0, 5) == "catch" ||tk.substr(0, 6) == "except"){return ">Caso um erro acontecer, então:\n";}
 	
 	// para C e C++ (exclusivo)
-	else if(tk.substr(0, 2) == "//")
+	else if(tk.substr(0, 2) == "//" and comentarios)
 	{
 		string ret = tk.substr(2, tk.substr(2).size()-1) + ".\n";
 		while(ret[0] == ' '){ret = ret.substr(1);}
@@ -74,18 +74,18 @@ string gerador_relatorio::traduzir(string tk)
 	// se não for varivel, é transformado em MD
 	if(!eh_variavel)
 	{
-		if(tk.substr(0, 3) == "int"){return "#### Método/Função" + tk.substr(3, tk.substr(3).size()-1) + "\n\n";}
-		else if(tk.substr(0, 6) == "string"){return "#### Método/Função" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
-		else if(tk.substr(0, 4) == "void"){return "#### Método/Função" + tk.substr(4, tk.substr(4).size()-1) + "\n\n";}
-		else if(tk.substr(0, 6) == "vector"){return "#### Método/Função" + tk.substr(6, tk.substr(6).size()-1) + "\n\n";}
-		else if(tk.substr(0, 4) == "bool"){return "#### Método/Função" + tk.substr(4, tk.substr(4).size()-1) + "\n\n";}
+		if(tk.substr(0, 3) == "int"){return "#### Função" + tk.substr(3, tk.substr(3).size()-1) + "\n- Essa função retorna um inteiro\n\n";}
+		else if(tk.substr(0, 6) == "string"){return "#### Função" + tk.substr(6, tk.substr(6).size()-1) + "\n- Essa função retorna uma string\n\n";}
+		else if(tk.substr(0, 4) == "void"){return "#### Função" + tk.substr(4, tk.substr(4).size()-1) + "\n- Sem retorno\n\n";}
+		else if(tk.substr(0, 6) == "vector"){return "#### Função" + tk.substr(6, tk.substr(6).size()-1) + "\n- Essa função retorna um vetor de dados\n\n";}
+		else if(tk.substr(0, 4) == "bool"){return "#### Função" + tk.substr(4, tk.substr(4).size()-1) + "\n- Essa função retorna verdadeiro ou falso\n\n";}
 	}
 	
 	return "";
 }
 
 // Método principal para gerar o relatório
-string gerador_relatorio::gerar_relatorio(bool do_print, string filename)
+string gerador_relatorio::gerar_relatorio(bool do_print, string filename, bool comentarios)
 {
 	// variaveis
 	string ret = "";
@@ -95,12 +95,12 @@ string gerador_relatorio::gerar_relatorio(bool do_print, string filename)
 	ret += "# Documentação do código ";
 	ret += filename;
 	ret += "\n";
-	ret += "> Bibliotecas utilizadas:\n";
+	ret += "- Bibliotecas utilizadas e arquivos importados:\n";
 	for(int i=0 ; i<code.size() ; i++)
 	{
 		// obter token
 		token = code[i];
-		ret += traduzir(token);
+		ret += traduzir(token, comentarios);
 	}
 	
 	// terminou, retorna e imprime
@@ -117,5 +117,7 @@ int main(int argc, char *argv[])
 {
 	gerador_relatorio gr;
 	gr.load_file(argv[1]);
-	gr.gerar_relatorio(true, argv[1]);
+	bool comentarios = false;
+	if(argv[2][0] == 't'){comentarios = true;}
+	gr.gerar_relatorio(true, argv[1], comentarios);
 }
