@@ -4,32 +4,39 @@ Dois códigos capazes de automaticamente documentar classes em código C++ e Pyt
 
 # Exemplo de saída:
 
+Comando executado:
+```bash
+./Documentar Documentar.cpp f
+```
+
 # Documentação do código Documentar.cpp
-> Bibliotecas utilizadas:
->>iostream
+- Bibliotecas utilizadas e arquivos importados:
+  - iostream
 
->>vector
+  - vector
 
->>fstream
+  - fstream
 
->>random
+  - random
 
 ## Definindo a classe gerador_relatorio
+#### Função traduzir(string tk, bool comentarios);
+- Essa função retorna uma string
 
-#### Método/Função gerador_relatorio::load_file(string filename)
+#### Função load_file(string filename);
+- Sem retorno
 
-#### Método/Função gerador_relatorio::traduzir(string tk)
+#### Função gerar_relatorio(bool do_print, string filename, bool comentarios);
+- Essa função retorna uma string
 
-> Para python e C++ (ambos contém operação).
-> Para C e C++ (exclusivo).
-> Se (linha não conter parenteses ou (conter parentesis e igual)), é uma delcaração de variavel, e não deve ser transofmada no MD.
+#### Função gerador_relatorio::load_file(string filename)
+- Sem retorno
 
-- essa operação retorna *""*
+#### Função gerador_relatorio::traduzir(string tk, bool comentarios)
+- Essa função retorna uma string
 
-#### Método/Função gerador_relatorio::gerar_relatorio(bool do_print, string filename)
+#### Função gerador_relatorio::gerar_relatorio(bool do_print, string filename, bool comentarios)
+- Essa função retorna uma string
 
-- essa operação retorna *ret*
-
-#### Método/Função main(int argc, char *argv[])
-
-
+#### Função main(int argc, char *argv[])
+- Essa função retorna um inteiro
