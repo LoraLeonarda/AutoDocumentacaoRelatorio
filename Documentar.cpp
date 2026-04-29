@@ -39,6 +39,7 @@ string gerador_relatorio::traduzir(string tk, bool comentarios)
 	// remover os tabs do inicio da linha e verificações adicionais
 	if(tk.empty()) return "";
 	while(!tk.empty() && tk[0] == '\t'){tk = tk.substr(1);}
+	while(!tk.empty() && tk[0] == ' '){tk = tk.substr(1);}
 	if(tk.empty()) return "";
 
 	
