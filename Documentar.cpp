@@ -56,7 +56,7 @@ string gerador_relatorio::traduzir(string tk, bool comentarios)
 	else if(tk.substr(0, 3) == "\"\"\"" and comentarios){return tk.substr(3, tk.substr(3).size()-2) + "\n";}
 	else if(tk.substr(0, 3) == "def"){return "#### Função" + tk.substr(3, tk.substr(3).size()-2) + "\n\n";}
 	else if(tk.substr(0, 5) == "class"){return "## Definindo a classe" + tk.substr(5, tk.substr(5).size()-1) + "\n";}
-	else if(tk.substr(0, 6) == "return"){return "";}
+	else if(tk.substr(0, 6) == "return"){return "- Retorna" + tk.substr(6);}
 	else if(tk.substr(0, 6) == "import"){return "  - " + tk.substr(6, tk.substr(6).size()-2) + "\n";}
 	else if(tk.substr(0, 3) == "try"){return ">Ele irá tentar executar o processo, se tiver sucesso:\n";}
 	else if(tk.substr(0, 5) == "catch" ||tk.substr(0, 6) == "except"){return ">Caso um erro acontecer, então:\n";}
