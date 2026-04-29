@@ -4,6 +4,12 @@
 #include <random>
 using namespace std;
 
+// detecta se string contem substring
+bool contem(string where, string what)
+{
+	return where.find(what) != string::npos;
+}
+
 //--------------------------------------------------
 // CLASSE DO GERADOR DE RELATÓRIO DE ARQUIVOS PYTHON
 //--------------------------------------------------
@@ -41,6 +47,9 @@ string gerador_relatorio::traduzir(string tk, bool comentarios)
 	// detectar inclusão de biblioteca em C e C++
 	if(tk.at(0) == '#' && tk.at(1) == 'i'){ return "  - " + tk.substr(10, tk.substr(10).size()-2) + "\n\n";}
 	
+	// matar strings com :: ou main ou qualquer outra coisa que surja
+	else if(contem(tk, "::") || contem(tk, "main")){return "";}
+	
 	// para python e C++ (ambos contém operação)
 	else if(tk.at(0) == '#' and comentarios){return ">" + tk.substr(1, tk.substr(1).size()-1) + "\n";}
 	else if(tk.substr(0, 3) == "\"\"\"" and comentarios){return tk.substr(3, tk.substr(3).size()-2) + "\n";}
@@ -74,11 +83,11 @@ string gerador_relatorio::traduzir(string tk, bool comentarios)
 	// se não for varivel, é transformado em MD
 	if(!eh_variavel)
 	{
-		if(tk.substr(0, 3) == "int"){return "#### Função" + tk.substr(3, tk.substr(3).size()-1) + "\n- Essa função retorna um inteiro\n\n";}
-		else if(tk.substr(0, 6) == "string"){return "#### Função" + tk.substr(6, tk.substr(6).size()-1) + "\n- Essa função retorna uma string\n\n";}
-		else if(tk.substr(0, 4) == "void"){return "#### Função" + tk.substr(4, tk.substr(4).size()-1) + "\n- Sem retorno\n\n";}
-		else if(tk.substr(0, 6) == "vector"){return "#### Função" + tk.substr(6, tk.substr(6).size()-1) + "\n- Essa função retorna um vetor de dados\n\n";}
-		else if(tk.substr(0, 4) == "bool"){return "#### Função" + tk.substr(4, tk.substr(4).size()-1) + "\n- Essa função retorna verdadeiro ou falso\n\n";}
+		if(tk.substr(0, 3) == "int"){return "#### Função" + tk.substr(3, tk.substr(3).size()-1) + "\n- Retorna um inteiro\n\n";}
+		else if(tk.substr(0, 6) == "string"){return "#### Função" + tk.substr(6, tk.substr(6).size()-1) + "\n- Retorna uma string\n\n";}
+		else if(tk.substr(0, 4) == "void"){return "#### Função" + tk.substr(4, tk.substr(4).size()-1) + "\n- Executa operação sem retorno\n\n";}
+		else if(tk.substr(0, 6) == "vector"){return "#### Função" + tk.substr(6, tk.substr(6).size()-1) + "\n- Retorna um vetor de dados\n\n";}
+		else if(tk.substr(0, 4) == "bool"){return "#### Função" + tk.substr(4, tk.substr(4).size()-1) + "\n- Retorna verdadeiro ou falso\n\n";}
 	}
 	
 	return "";
@@ -115,9 +124,22 @@ string gerador_relatorio::gerar_relatorio(bool do_print, string filename, bool c
 //--------------------------------------------------
 int main(int argc, char *argv[])
 {
-	gerador_relatorio gr;
-	gr.load_file(argv[1]);
-	bool comentarios = false;
-	if(argv[2][0] == 't'){comentarios = true;}
-	gr.gerar_relatorio(true, argv[1], comentarios);
+	if(argc == 3)
+	{
+		gerador_relatorio gr;
+		gr.load_file(argv[1]);
+		bool comentarios = false;
+		if(argv[2][0] == 't'){comentarios = true;}
+		gr.gerar_relatorio(true, argv[1], comentarios);
+	}
+	else if(argc == 2)
+	{
+		gerador_relatorio gr;
+		gr.load_file(argv[1]);
+		gr.gerar_relatorio(true, argv[1], false);
+	}
+	else
+	{
+		cout << "ERRO: arquivo não informado, use como:\n\t./Documentar <codigo>\nOu como\n\t./Documentar <codigo> <true|false>" << endl;
+	}
 }

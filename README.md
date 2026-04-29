@@ -1,12 +1,12 @@
-# Auto Documentação e Relatorio
+# Auto Documentação
 
-Dois códigos capazes de automaticamente documentar classes em código C++ e Python e de criar um relatório de funcionamento por classe (atualmente somente em Python)
+Esse repositório contém um sistema capaz de automaticamente documentar classes em código C++ e Python.
 
 # Exemplo de saída:
 
 Comando executado:
 ```bash
-./Documentar Documentar.cpp f
+./Documentar Documentar.cpp
 ```
 
 # Documentação do código Documentar.cpp
@@ -19,24 +19,17 @@ Comando executado:
 
   - random
 
+#### Função contem(string where, string what)
+- Retorna verdadeiro ou falso
+
 ## Definindo a classe gerador_relatorio
 #### Função traduzir(string tk, bool comentarios);
-- Essa função retorna uma string
+- Retorna uma string
 
 #### Função load_file(string filename);
-- Sem retorno
+- Executa operação sem retorno
 
 #### Função gerar_relatorio(bool do_print, string filename, bool comentarios);
-- Essa função retorna uma string
+- Retorna uma string
 
-#### Função gerador_relatorio::load_file(string filename)
-- Sem retorno
 
-#### Função gerador_relatorio::traduzir(string tk, bool comentarios)
-- Essa função retorna uma string
-
-#### Função gerador_relatorio::gerar_relatorio(bool do_print, string filename, bool comentarios)
-- Essa função retorna uma string
-
-#### Função main(int argc, char *argv[])
-- Essa função retorna um inteiro
